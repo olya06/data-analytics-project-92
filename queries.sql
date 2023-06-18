@@ -1,5 +1,7 @@
+--запрос, который считает общее количество покупателей 
 select count(*) as customers_count from customers c;
 
+--отчет с продавцами у которых наибольшая выручка
 select concat (e.first_name, ' ', e.last_name) as name, count(s.sales_person_id) as operations, sum(s.quantity*p.price) as income from employees e
 left join sales s
 on e.employee_id = s.sales_person_id
@@ -10,6 +12,7 @@ order by income desc nulls last
 limit 10
 ;
 
+--отчет с продавцами, чья выручка ниже средней выручки всех продавцов
 with average_employee_sales as (
 select concat (e.first_name, ' ', e.last_name) as name, round(avg(s.quantity*p.price), 0) as average_income from employees e
 left join sales s
@@ -28,6 +31,7 @@ on p.product_id = s.product_id)
 order by average_income
 ;
 
+--отчет с данными по выручке по каждому продавцу и дню недели
 with sales_dates as (
 select concat (e.first_name, ' ', e.last_name) as name,
 extract(ISODOW from s.sale_date) as day_week,
@@ -44,6 +48,7 @@ order by 2
 select name, weekday, income from sales_dates
 ;
 
+-- отчет с возрастными группами покупателей
 with tab as (
 select age, count(age),
 case
@@ -58,6 +63,7 @@ order by age
 select distinct age_category, sum(count) over (partition by age_category) as count from tab
 ;
 
+--отчет с количеством покупателей и выручкой по месяцам
 select to_char(s.sale_date, 'YYYY-MM') as date,
 count(distinct s.customer_id) as total_customers,
 sum(s.quantity * p.price) as income from sales s
@@ -66,6 +72,7 @@ on s.product_id = p.product_id
 group by 1
 ;
 
+-- отчет с покупателями первая покупка которых пришлась на время проведения специальных акций
 with tab1 as (
 select c.customer_id, concat (c.first_name, ' ', c.last_name) as customer,
 s.sale_date, concat (e.first_name, ' ', e.last_name) as seller, p.price * s.quantity as sum
