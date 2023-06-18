@@ -42,4 +42,44 @@ group by 1, 2, 3
 order by 2
 )
 select name, weekday, income from sales_dates
-; 
+;
+
+with tab as (
+select age, count(age),
+case
+when age between 16 and 25 then '16-25'
+when age between 26 and 40 then '26-40'
+else '40+'
+end as age_category
+from customers c
+group by age
+order by age
+)
+select distinct age_category, sum(count) over (partition by age_category) as count from tab
+;
+
+select to_char(s.sale_date, 'YYYY-MM') as date,
+count(distinct s.customer_id) as total_customers,
+sum(s.quantity * p.price) as income from sales s
+left join products p
+on s.product_id = p.product_id
+group by 1
+;
+
+with tab1 as (
+select c.customer_id, concat (c.first_name, ' ', c.last_name) as customer,
+s.sale_date, concat (e.first_name, ' ', e.last_name) as seller, p.price * s.quantity as sum
+from sales s
+left join customers c
+on c.customer_id = s.customer_id
+left join products p
+on p.product_id = s.product_id
+left join employees e
+on s.sales_person_id = e.employee_id
+order by 1, 3
+), tab2 as (
+select distinct on (customer) customer, sale_date, seller, sum from tab1
+where sum = 0
+)
+select customer, sale_date, seller from tab2
+  ;
