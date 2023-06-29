@@ -46,6 +46,7 @@ group by 1, 2, 3
 order by 2
 )
 select name, weekday, income from sales_dates
+where income is not null
 ;
 
 -- отчет с возрастными группами покупателей
