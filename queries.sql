@@ -35,7 +35,7 @@ order by average_income
 with sales_dates as (
 select concat (e.first_name, ' ', e.last_name) as name,
 extract(ISODOW from s.sale_date) as day_week,
-to_char(s.sale_date, 'Day') as weekday,
+to_char(s.sale_date, 'day') as weekday,
 round(sum(s.quantity*p.price)) as income
 from employees e
 left join sales s
