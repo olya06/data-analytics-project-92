@@ -51,17 +51,18 @@ where income is not null
 
 -- отчет с возрастными группами покупателей
 with tab as (
-select age, count(age),
+select age, count(age) as count_age,
 case
 when age between 16 and 25 then '16-25'
 when age between 26 and 40 then '26-40'
-else '40+'
+when age >= 40 then '40+'
+else '0-15'
 end as age_category
 from customers c
 group by age
-order by age
 )
-select distinct age_category, sum(count) over (partition by age_category) as count from tab
+select age_category, sum(count_age) as count from tab
+group by 1
 ;
 
 --отчет с количеством покупателей и выручкой по месяцам
