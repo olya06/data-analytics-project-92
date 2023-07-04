@@ -36,13 +36,13 @@ with sales_dates as (
 select concat(e.first_name, ' ', e.last_name) as name,
 to_char(s.sale_date, 'ID') as day_week,
 to_char(s.sale_date, 'day') as weekday,
-ROUND(SUM(s.quantity * p.price)) as income
+round(sum(s.quantity * p.price)) as income
 from employees e
 left join sales s
 on e.employee_id = s.sales_person_id
 left join products p
 on p.product_id = s.product_id
-GROUP BY 1, 2, 3
+group by 1, 2, 3
 order by 2
 )
 select name, weekday, income from sales_dates
