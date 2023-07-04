@@ -76,8 +76,8 @@ group by 1
 
 -- отчет с покупателями первая покупка которых пришлась на время проведения специальных акций
 with tab1 as (
-select c.customer_id, concat (c.first_name, ' ', c.last_name) as customer,
-s.sale_date, concat (e.first_name, ' ', e.last_name) as seller, p.price * s.quantity as sum
+select c.customer_id, concat(c.first_name, ' ', c.last_name) as customer, s.sale_date,
+concat(e.first_name, ' ', e.last_name) as seller
 from sales s
 left join customers c
 on c.customer_id = s.customer_id
@@ -85,10 +85,8 @@ left join products p
 on p.product_id = s.product_id
 left join employees e
 on s.sales_person_id = e.employee_id
-order by 1, 3
-), tab2 as (
-select distinct on (customer) customer, sale_date, seller, sum from tab1
-where sum = 0
+where (p.price * s.quantity) = 0
+order by customer_id, sale_date
 )
-select customer, sale_date, seller from tab2
-  ;
+select distinct on (customer) customer, sale_date, seller from tab1
+;
