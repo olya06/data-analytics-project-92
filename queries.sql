@@ -36,12 +36,11 @@ select concat(e.first_name, ' ', e.last_name) as name,
 to_char(s.sale_date, 'day') as weekday,
 round(sum(s.quantity * p.price), 0) as income
 from employees e
-left join sales s
+inner join sales s
 on e.employee_id = s.sales_person_id
-left join products p
+inner join products p
 on p.product_id = s.product_id
 group by to_char(s.sale_date, 'ID'), 2, 1
-having round(sum(s.quantity * p.price)) is not null
 order by to_char(s.sale_date, 'ID'), name
 ;
 
