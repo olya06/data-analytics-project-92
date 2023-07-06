@@ -46,20 +46,21 @@ order by to_char(s.sale_date, 'ID'), name
 ;
 
 -- отчет с возрастными группами покупателей
-with tab as (
-select age, count(age) as count_age,
+select
 case
 when age between 16 and 25 then '16-25'
 when age between 26 and 40 then '26-40'
 when age >= 40 then '40+'
 else '0-15'
-end as age_category
+end as age_category,
+sum(count_age) as count
+from
+(
+select age, count(age) as count_age
 from customers c
 group by age
-)
-select age_category, sum(count_age) as count from tab
-group by 1
-;
+) as tab
+group by age_category;
 
 --отчет с количеством покупателей и выручкой по месяцам
 select to_char(s.sale_date, 'YYYY-MM') as date,
